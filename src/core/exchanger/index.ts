@@ -1,41 +1,18 @@
 import { GET } from '@/shared/services/api.ts'
 
-export interface CurrencyResponse {
-  'usd-rub': number
-  'eur-rub': number
-  'brl-rub': number
-  'kzt-rub': number
-  'idr-rub': number
-  'rub-usd': number
-  'eur-usd': number
-  'brl-usd': number
-  'kzt-usd': number
-  'idr-usd': number
-  'rub-eur': number
-  'usd-eur': number
-  'brl-eur': number
-  'kzt-eur': number
-  'idr-eur': number
-  'rub-brl': number
-  'usd-brl': number
-  'eur-brl': number
-  'kzt-brl': number
-  'idr-brl': number
-  'rub-kzt': number
-  'usd-kzt': number
-  'eur-kzt': number
-  'brl-kzt': number
-  'idr-kzt': number
-  'rub-idr': number
-  'usd-idr': number
-  'eur-idr': number
-  'brl-idr': number
-  'kzt-idr': number
+export const enum Currency {
+  USD = 'usd',
+  EUR = 'eur',
+  RUB = 'rub',
 }
 
-export type PossibleCurrency = 'USD' | 'EUR' | 'RUB'
+export type ResponseKey = `${Currency}-${Currency}`
 
-export class Currency {
+export type CurrencyResponse = Record<ResponseKey, number>
+
+export const currencyOptions: Currency[] = [Currency.USD, Currency.EUR, Currency.RUB] as const
+
+export class CurrencyAPI {
   static GetCurrencyCours() {
     return GET<CurrencyResponse>('/api/currency/')
   }

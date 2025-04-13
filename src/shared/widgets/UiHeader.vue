@@ -3,10 +3,7 @@
     <router-link class="block" to="/"> Главная </router-link>
     <router-link class="block" to="/exchanger"> Конвертация </router-link>
     <div>
-      <CurrencyDropdown
-        :selectedCurrency="currencyStore.currentCurrency"
-        @changeValue="changeValue"
-      />
+      <CurrencyDropdown v-model="currentCurrency" />
     </div>
   </header>
 </template>
@@ -14,13 +11,18 @@
 <script lang="ts" setup>
 import CurrencyDropdown from '@/shared/widgets/CurrencyDropdown.vue'
 import { useCurrency } from '../store/currency'
-import type { PossibleCurrency } from '@/core/exchanger'
+import { Currency } from '@/core/exchanger'
+import { computed } from 'vue'
 
 const currencyStore = useCurrency()
-
-const changeValue = (val: PossibleCurrency) => {
-  currencyStore.currentCurrency = val
-}
+const currentCurrency = computed({
+  get: () => {
+    return currencyStore.currentCurrency
+  },
+  set: (val: Currency) => {
+    currencyStore.currentCurrency = val
+  },
+})
 </script>
 
 <style lang="scss" scoped>

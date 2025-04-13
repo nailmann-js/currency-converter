@@ -1,39 +1,27 @@
 <template>
   <div class="dropdown">
-    <select name="select" v-model="selectedValue" @change="$emit('changeValue', selectedValue)">
-      <option v-for="value in availableOptions" :key="value">{{ value }}</option>
+    <select name="select" v-model="model">
+      <option v-for="value in currencyOptions" :key="value">{{ value }}</option>
     </select>
   </div>
 </template>
 
 <script lang="ts" setup>
-import type { PossibleCurrency } from '@/core/exchanger'
-import { ref, watch } from 'vue'
+import { Currency, currencyOptions } from '@/core/exchanger'
+import { type PropType, defineModel } from 'vue'
 
-const props = withDefaults(
-  defineProps<{
-    selectedCurrency: string
-  }>(),
-  {
-    selectedCurrency: 'RUB',
-  },
-)
-
-const availableOptions: PossibleCurrency[] = ['USD', 'EUR', 'RUB']
-const selectedValue = ref(props.selectedCurrency)
-
-watch(
-  () => props.selectedCurrency,
-  (val) => {
-    selectedValue.value = val
-  },
-)
+const model = defineModel({
+  default: Currency.RUB,
+  required: true,
+  type: String as PropType<Currency>,
+})
 </script>
 
 <style lang="scss" scoped>
 .dropdown {
   display: flex;
   align-items: center;
+  margin-top: 5px;
 
   select {
     padding: 0.5rem 2rem 0.5rem 1rem;

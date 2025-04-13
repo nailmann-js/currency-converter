@@ -18,39 +18,27 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted } from 'vue'
+import { computed, onMounted, unref } from 'vue'
 import { useCurrency } from '@/shared/store/currency'
+import { Currency, type ResponseKey, currencyOptions } from '@/core/exchanger'
 
 const currencyStore = useCurrency()
+const currentCurrency = computed<Currency>(() => currencyStore.currentCurrency)
 
-onMounted(() => {
-  currencyStore.getCours()
-})
+onMounted(currencyStore.getCours)
 
 const selectedCourses = computed(() => {
-  switch (currencyStore.currentCurrency) {
-    case 'USD':
-      return {
-        RUB: currencyStore.currentCourses?.['rub-usd'],
-        EUR: currencyStore.currentCourses?.['eur-usd'],
-      }
-    case 'RUB':
-      return {
-        USD: currencyStore.currentCourses?.['usd-rub'],
-        EUR: currencyStore.currentCourses?.['eur-rub'],
-      }
-    case 'EUR':
-      return {
-        USD: currencyStore.currentCourses?.['usd-eur'],
-        RUB: currencyStore.currentCourses?.['rub-eur'],
-      }
-    default:
-      return {
-        USD: 1,
-        RUB: 1,
-        EUR: 1,
-      }
-  }
+  return currencyOptions
+    .filter((currency) => currency !== currencyStore.currentCurrency)
+    .reduce(
+      (acc, currency) => {
+        const key: ResponseKey = `${currency}-${unref(currentCurrency)}`
+        acc[currency] = currencyStore.currentCourses?.[key] ?? 0
+
+        return acc
+      },
+      {} as Record<Currency, number>,
+    )
 })
 </script>
 

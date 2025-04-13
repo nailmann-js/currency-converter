@@ -2,85 +2,81 @@
   <div>
     <h1>Конвертация</h1>
     <div class="currency-converter">
-      <input
-        type="number"
-        v-model="inputCurrency"
-        @input="convertOutputValues"
-        placeholder="Введите сумму"
-      />
-      <CurrencyDropdown :selectedCurrency="selectedInputOption" @changeValue="changeInputValue" />
+      <input type="number" v-model.number="formatedInput" placeholder="Введите сумму" />
+      <CurrencyDropdown v-model="selectedInputOption" />
     </div>
     <div class="currency-converter">
-      <input
-        type="number"
-        v-model="outputCurrency"
-        @input="convertInputValues"
-        placeholder="Результат"
-      />
-      <CurrencyDropdown :selectedCurrency="selectedOutputOption" @changeValue="changeOutputValue" />
+      <input type="number" v-model.number="formatedOutput" placeholder="Результат" />
+      <CurrencyDropdown v-model="selectedOutputOption" />
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed, unref } from 'vue'
 import { useCurrency } from '@/shared/store/currency'
 import CurrencyDropdown from '@/shared/widgets/CurrencyDropdown.vue'
-import type { PossibleCurrency } from '@/core/exchanger'
+import { Currency, type ResponseKey } from '@/core/exchanger'
+import { watch } from 'vue'
 
 const currencyStore = useCurrency()
-const selectedInputOption = ref<string>('RUB')
-const selectedOutputOption = ref<string>('USD')
-const inputCurrency = ref<number>()
-const outputCurrency = ref<number>()
+const selectedInputOption = ref<Currency>(Currency.RUB)
+const selectedOutputOption = ref<Currency>(Currency.USD)
+const input = ref(0)
+const output = ref(0)
 
-const changeInputValue = (val: PossibleCurrency) => {
-  if (val === selectedOutputOption.value) {
-    selectedOutputOption.value = selectedInputOption.value
-  }
-  selectedInputOption.value = val
-  convertOutputValues()
-}
-
-const changeOutputValue = (val: PossibleCurrency) => {
-  if (val === selectedInputOption.value) {
-    selectedInputOption.value = selectedOutputOption.value
-  }
-  selectedOutputOption.value = val
-  convertOutputValues()
-}
-
-const convertOutputValues = function () {
-  if (typeof inputCurrency.value === 'number') {
-    const number =
-      inputCurrency.value *
-      // @ts-expect-error: Because we need to get key from options like "usd-rub" to get value from currentCourses
-      currencyStore.currentCourses[
-        `${selectedInputOption.value.toLowerCase()}-${selectedOutputOption.value.toLocaleLowerCase()}`
-      ]
-    outputCurrency.value = parseFloat(number.toFixed(2))
-  } else {
-    outputCurrency.value = 0
-  }
-}
-
-const convertInputValues = function () {
-  if (typeof outputCurrency.value === 'number') {
-    const number =
-      outputCurrency.value *
-      // @ts-expect-error: Because we need to get key from options like "usd-rub" to get value from currentCourses
-      currencyStore.currentCourses[
-        `${selectedOutputOption.value.toLocaleLowerCase()}-${selectedInputOption.value.toLowerCase()}`
-      ]
-    inputCurrency.value = parseFloat(number.toFixed(2))
-  } else {
-    inputCurrency.value = 0
-  }
-}
-
-onMounted(() => {
-  currencyStore.getCours()
+const formatedInput = computed<number>({
+  get: () => {
+    return unref(input)
+  },
+  set: (val: number) => {
+    input.value = val
+    output.value = convertOutputValues({
+      inputVal: val,
+      inputCurr: selectedInputOption.value,
+      outputCurr: selectedOutputOption.value,
+    })
+  },
 })
+
+const formatedOutput = computed<number>({
+  get: () => {
+    return unref(output)
+  },
+  set: (val: number) => {
+    output.value = val
+    input.value = convertOutputValues({
+      inputVal: val,
+      inputCurr: selectedOutputOption.value,
+      outputCurr: selectedInputOption.value,
+    })
+  },
+})
+
+watch([selectedInputOption, selectedOutputOption], () => {
+  formatedInput.value = unref(input)
+})
+
+const convertOutputValues = ({
+  inputVal,
+  inputCurr,
+  outputCurr,
+}: {
+  inputCurr: Currency
+  outputCurr: Currency
+  inputVal: number
+}) => {
+  if (inputCurr === outputCurr) {
+    return inputVal
+  }
+
+  const key: ResponseKey = `${inputCurr}-${outputCurr}`
+  const number = inputVal * (currencyStore.currentCourses?.[key] ?? 0)
+
+  return parseFloat(number.toFixed(2))
+}
+
+onMounted(currencyStore.getCours)
 </script>
 
 <style lang="scss" scoped>

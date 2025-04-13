@@ -1,6 +1,6 @@
 <template>
   <div class="main-layout">
-    <TheHeader class="header" />
+    <UiHeader class="header" />
 
     <main style="padding: 24px" class="content h-full w-full">
       <router-view v-slot="{ Component }">
@@ -11,7 +11,7 @@
 </template>
 
 <script setup lang="ts">
-import TheHeader from '@/shared/widgets/TheHeader.vue'
+import UiHeader from '@/shared/widgets/UiHeader.vue'
 import { onMounted } from 'vue'
 
 const AppMountedHandlers = async () => {
@@ -22,9 +22,7 @@ const AppMountedHandlers = async () => {
   }
 }
 
-onMounted(() => {
-  AppMountedHandlers()
-})
+onMounted(AppMountedHandlers)
 </script>
 
 <style lang="scss" scoped>
