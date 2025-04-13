@@ -1,9 +1,9 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
-import { Currency, type CurrencyResponse } from '@/core/exchanger'
+import { Currency, type CurrencyResponse, type PossibleCurrency } from '@/core/exchanger'
 
 export const useCurrency = defineStore('currencyStore', () => {
-  const currentCurrency = ref<'USD' | 'EUR' | 'RUB'>('RUB')
+  const currentCurrency = ref<PossibleCurrency>('RUB')
   const currentCourses = ref<CurrencyResponse>()
 
   const getCours = function () {

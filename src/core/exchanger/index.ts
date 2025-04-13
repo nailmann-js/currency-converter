@@ -33,6 +33,8 @@ export interface CurrencyResponse {
   'kzt-idr': number
 }
 
+export type PossibleCurrency = 'USD' | 'EUR' | 'RUB'
+
 export class Currency {
   static GetCurrencyCours() {
     return GET<CurrencyResponse>('/api/currency/')

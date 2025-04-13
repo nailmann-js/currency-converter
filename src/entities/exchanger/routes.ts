@@ -3,7 +3,7 @@ import { type RouteRecordRaw } from 'vue-router'
 export const exchangeRoutes: RouteRecordRaw[] = [
   {
     path: '/exchanger',
-    name: 'Exchanger', // RouteNames.APP_CLUSTERS
+    name: 'Exchanger',
     children: [
       {
         name: 'Main page',

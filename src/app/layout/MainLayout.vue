@@ -40,5 +40,8 @@ onMounted(() => {
 .content {
   grid-area: content;
   overflow-x: hidden;
+
+  display: flex;
+  justify-content: center;
 }
 </style>

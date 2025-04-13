@@ -1,12 +1,24 @@
 <template>
-  <div>Конвертация</div>
-  <div class="currency-converter">
-    <input type="number" v-model="inputCurrency" @input="convertOutputValues" />
-    <CurrencyDropdown :selectedCurrency="selectedInputOption" @changeValue="changeInputValue" />
-  </div>
-  <div class="currency-converter">
-    <input type="number" v-model="outputCurrency" @input="convertInputValues" />
-    <CurrencyDropdown :selectedCurrency="selectedOutputOption" @changeValue="changeOutputValue" />
+  <div>
+    <h1>Конвертация</h1>
+    <div class="currency-converter">
+      <input
+        type="number"
+        v-model="inputCurrency"
+        @input="convertOutputValues"
+        placeholder="Введите сумму"
+      />
+      <CurrencyDropdown :selectedCurrency="selectedInputOption" @changeValue="changeInputValue" />
+    </div>
+    <div class="currency-converter">
+      <input
+        type="number"
+        v-model="outputCurrency"
+        @input="convertInputValues"
+        placeholder="Результат"
+      />
+      <CurrencyDropdown :selectedCurrency="selectedOutputOption" @changeValue="changeOutputValue" />
+    </div>
   </div>
 </template>
 
@@ -14,6 +26,7 @@
 import { ref, onMounted } from 'vue'
 import { useCurrency } from '@/shared/store/currency'
 import CurrencyDropdown from '@/shared/widgets/CurrencyDropdown.vue'
+import type { PossibleCurrency } from '@/core/exchanger'
 
 const currencyStore = useCurrency()
 const selectedInputOption = ref<string>('RUB')
@@ -21,7 +34,7 @@ const selectedOutputOption = ref<string>('USD')
 const inputCurrency = ref<number>()
 const outputCurrency = ref<number>()
 
-const changeInputValue = (val: 'USD' | 'EUR' | 'RUB') => {
+const changeInputValue = (val: PossibleCurrency) => {
   if (val === selectedOutputOption.value) {
     selectedOutputOption.value = selectedInputOption.value
   }
@@ -29,7 +42,7 @@ const changeInputValue = (val: 'USD' | 'EUR' | 'RUB') => {
   convertOutputValues()
 }
 
-const changeOutputValue = (val: 'USD' | 'EUR' | 'RUB') => {
+const changeOutputValue = (val: PossibleCurrency) => {
   if (val === selectedInputOption.value) {
     selectedInputOption.value = selectedOutputOption.value
   }
@@ -70,13 +83,45 @@ onMounted(() => {
 })
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
+div {
+  max-width: 800px;
+  padding: 0 1rem;
+}
+
 .currency-converter {
   display: flex;
+  gap: 1rem;
   align-items: center;
-  margin-bottom: 15px;
-  select {
-    margin-left: 10px;
+  background: white;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  margin-bottom: 1.5rem;
+  transition: transform 0.2s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+  }
+
+  input {
+    flex: 1;
+    padding: 0.8rem 1rem;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 1.1rem;
+    color: #2c3e50;
+    transition: all 0.3s ease;
+
+    &:focus {
+      outline: none;
+      border-color: #42b983;
+      box-shadow: 0 0 0 2px rgba(66, 185, 131, 0.2);
+    }
+
+    &::placeholder {
+      color: #999;
+    }
   }
 }
 </style>
