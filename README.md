@@ -9,6 +9,7 @@
 npm run dev
 ```
 
+### Примеры работы приложения
 
 ![image](https://github.com/user-attachments/assets/6743057e-bef7-4d58-9c05-3781d3706700)
 
